@@ -1,0 +1,134 @@
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,monospace;background:#0d1117;color:#c9d1d9;line-height:1.5}
+.app{max-width:1600px;margin:0 auto;padding:16px 24px}
+
+/* Header */
+.app-header{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #21262d;margin-bottom:16px}
+.app-header h1{font-size:18px;color:#58a6ff;font-weight:700}
+.subtitle{font-size:13px;color:#484f58}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:16px}
+.store-status{font-size:11px;padding:3px 8px;border-radius:10px;font-weight:600}
+.store-status.online{color:#3fb950;background:#0d2818;border:1px solid #238636}
+.store-status.offline{color:#f85149;background:#1a0e14;border:1px solid #f8514933}
+.kbd-hint{font-size:11px;color:#484f58}
+kbd{background:#161b22;border:1px solid #30363d;border-radius:3px;padding:1px 5px;font-size:10px;color:#8b949e;font-family:inherit}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;right:24px;background:#1f6feb;color:#fff;padding:8px 16px;border-radius:6px;font-size:13px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:100}
+.toast.show{opacity:1}
+
+/* Search */
+.search-row{display:flex;gap:8px;margin-bottom:12px;align-items:stretch}
+.search-wrap{flex:1;position:relative}
+.search-wrap input{width:100%;background:#161b22;color:#c9d1d9;border:1px solid #30363d;border-radius:6px;padding:8px 36px 8px 12px;font-size:14px;font-family:'SF Mono','Fira Code',monospace;outline:none}
+.search-wrap input:focus{border-color:#58a6ff;box-shadow:0 0 0 2px rgba(88,166,255,.15)}
+.search-clear{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;color:#484f58;cursor:pointer;font-size:16px;padding:4px;display:none}
+.search-clear:hover{color:#c9d1d9}
+.search-suggestions{position:absolute;top:100%;left:0;right:0;background:#161b22;border:1px solid #30363d;border-top:none;border-radius:0 0 6px 6px;z-index:20;display:none;max-height:200px;overflow-y:auto}
+.search-suggestions.show{display:block}
+.suggestion{padding:6px 12px;font-size:12px;color:#8b949e;cursor:pointer;font-family:'SF Mono','Fira Code',monospace;display:flex;align-items:center;gap:8px}
+.suggestion:hover{background:#1f2937;color:#c9d1d9}
+.suggestion-label{font-size:10px;color:#484f58;margin-left:auto}
+.btn-search{background:#238636;color:#fff;border:none;border-radius:6px;padding:8px 20px;font-size:13px;cursor:pointer;font-weight:600;white-space:nowrap}
+.btn-search:hover{background:#2ea043}
+.btn-icon{background:#161b22;color:#8b949e;border:1px solid #21262d;border-radius:6px;padding:8px 10px;cursor:pointer;font-size:14px;transition:all .1s;display:flex;align-items:center}
+.btn-icon:hover{color:#c9d1d9;border-color:#30363d;background:#1f2937}
+.btn-icon.active{color:#58a6ff;border-color:#58a6ff}
+
+/* Filter chips */
+.key-type-filter{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.filter-label{font-size:11px;color:#484f58;white-space:nowrap;text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+.filter-chips{display:flex;gap:5px;flex-wrap:wrap}
+.chip{background:#161b22;color:#8b949e;border:1px solid #21262d;border-radius:16px;padding:3px 10px;font-size:11px;cursor:pointer;white-space:nowrap;transition:all .15s;font-weight:500}
+.chip:hover{background:#1f2937;color:#58a6ff;border-color:#30363d}
+.chip-active{background:#1f3a5f;color:#58a6ff;border-color:#58a6ff}
+.chip-wrapper{position:relative}
+.chip-tooltip{position:absolute;top:calc(100% + 6px);left:0;z-index:10;background:#1c2128;border:1px solid #30363d;border-radius:8px;padding:10px 12px;min-width:300px;max-width:480px;box-shadow:0 4px 12px rgba(0,0,0,.5);pointer-events:none}
+.chip-desc{font-size:12px;color:#c9d1d9;margin-bottom:6px;line-height:1.4}
+.chip-example{display:block;font-family:'SF Mono','Fira Code',monospace;font-size:11px;color:#7ee787;background:#0d1117;padding:4px 8px;border-radius:4px;word-break:break-all}
+
+/* Toolbar */
+.toolbar{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.toolbar-left{display:flex;align-items:center;gap:8px;flex:1}
+.toolbar-right{display:flex;align-items:center;gap:6px}
+.status-count{font-size:12px;color:#8b949e;font-weight:600}
+.status-prefix{color:#58a6ff;font-family:'SF Mono','Fira Code',monospace;font-size:12px}
+.inline-filter{background:#0d1117;color:#c9d1d9;border:1px solid #21262d;border-radius:4px;padding:3px 8px;font-size:11px;font-family:'SF Mono','Fira Code',monospace;outline:none;width:180px}
+.inline-filter:focus{border-color:#58a6ff}
+.toolbar-btn{background:none;border:1px solid #21262d;color:#484f58;border-radius:4px;padding:3px 8px;font-size:11px;cursor:pointer;white-space:nowrap;transition:all .1s}
+.toolbar-btn:hover{color:#c9d1d9;border-color:#30363d}
+
+/* Key list table */
+.key-list table{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed}
+.key-list thead th{text-align:left;padding:6px 10px;border-bottom:2px solid #21262d;color:#484f58;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px;position:sticky;top:0;background:#0d1117;z-index:2}
+.th-num{width:36px}.th-key{width:50%}.th-size{width:100px}.th-preview{}.th-actions{width:36px}
+.key-row{cursor:pointer;transition:background .08s}
+.key-row:hover{background:#161b22}
+.key-row:nth-child(even){background:#0b0f14}
+.key-row:nth-child(even):hover{background:#161b22}
+.key-row td{padding:5px 10px;border-bottom:1px solid #161b22;vertical-align:middle}
+.key-row.selected{background:#1a2332;outline:1px solid #1f6feb}
+.key-row.filtered-out{display:none}
+.row-num{color:#30363d;font-size:11px;text-align:right;padding-right:12px;user-select:none}
+.key-cell{font-family:'SF Mono','Fira Code',monospace;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.key-prefix{color:#484f58}
+.key-suffix{color:#58a6ff;font-weight:500}
+.size-cell{white-space:nowrap;color:#484f58;font-size:12px;font-family:'SF Mono','Fira Code',monospace;position:relative}
+.size-bar{position:absolute;left:0;bottom:0;height:2px;background:#1f6feb;border-radius:1px;opacity:.5;transition:width .2s}
+.preview-cell{color:#6e7681;font-family:'SF Mono','Fira Code',monospace;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.copy-btn{background:none;border:none;color:#30363d;cursor:pointer;font-size:14px;padding:2px 6px;border-radius:4px;transition:color .1s}
+.copy-btn:hover{color:#58a6ff;background:#161b22}
+.load-more{display:block;margin:16px auto;background:#161b22;color:#8b949e;border:1px solid #21262d;border-radius:6px;padding:8px 32px;font-size:13px;cursor:pointer;font-weight:500}
+.load-more:hover{background:#1f2937;color:#c9d1d9;border-color:#30363d}
+
+/* Detail view */
+.detail-nav{display:flex;align-items:center;gap:8px;margin-bottom:12px;font-size:12px;color:#484f58}
+.detail-nav a{color:#58a6ff;cursor:pointer;text-decoration:none}
+.detail-nav a:hover{text-decoration:underline}
+.detail-nav span{color:#30363d}
+.detail-header{background:#161b22;border:1px solid #21262d;border-radius:8px;padding:14px 16px;margin-bottom:16px}
+.detail-key-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+.detail-key{font-family:'SF Mono','Fira Code',monospace;font-size:14px;color:#58a6ff;word-break:break-all;flex:1}
+.detail-copy-btn{background:#21262d;color:#8b949e;border:1px solid #30363d;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;white-space:nowrap;transition:all .1s}
+.detail-copy-btn:hover{color:#c9d1d9;border-color:#484f58}
+.detail-tags{display:flex;gap:8px;flex-wrap:wrap}
+.tag{background:#0d1117;border:1px solid #21262d;border-radius:4px;padding:2px 8px;font-size:11px;color:#8b949e}
+.tag-encoding{color:#7ee787;border-color:#238636}
+.tag-size{color:#d2a8ff;border-color:#6e40c9}
+.tag-warn{color:#d29922;border-color:#9e6a03}
+.detail-actions{display:flex;gap:8px;margin-top:10px}
+.detail-btn{background:#21262d;color:#c9d1d9;border:1px solid #30363d;border-radius:6px;padding:6px 14px;cursor:pointer;font-size:12px;text-decoration:none;font-weight:500;transition:all .1s}
+.detail-btn:hover{background:#30363d;border-color:#484f58}
+.detail-btn-primary{background:#1f6feb;color:#fff;border-color:#1f6feb}
+.detail-btn-primary:hover{background:#388bfd}
+.detail-body{background:#161b22;border:1px solid #21262d;border-radius:8px;overflow:hidden}
+.detail-body-toolbar{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid #21262d;background:#0d1117}
+.detail-body-toolbar span{font-size:11px;color:#484f58;text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+.detail-body-toolbar .toolbar-right{margin-left:auto}
+.detail-body-content{padding:16px;overflow-x:auto;max-height:calc(100vh - 320px);overflow-y:auto}
+
+/* Viewers */
+.json-viewer{font-size:13px;font-family:'SF Mono','Fira Code',monospace;line-height:1.6}
+.json-key{color:#79c0ff}.json-str{color:#a5d6ff}.json-num{color:#d2a8ff}.json-bool{color:#ff7b72}.json-null{color:#484f58}
+.json-toggle{cursor:pointer;user-select:none;color:#484f58;display:inline-block;width:14px;text-align:center}.json-toggle:hover{color:#c9d1d9}
+.json-collapsed{display:none}
+.json-summary{color:#484f58;font-style:italic}
+.text-viewer{font-family:'SF Mono','Fira Code',monospace;font-size:13px;white-space:pre-wrap;word-break:break-all;color:#c9d1d9;line-height:1.6}
+.hex-viewer{font-family:'SF Mono','Fira Code',monospace;font-size:12px;line-height:1.7;color:#8b949e}
+.hex-offset{color:#484f58}.hex-byte{color:#79c0ff}.hex-ascii{color:#7ee787}
+
+/* Welcome */
+.welcome{text-align:center;padding:80px 20px;max-width:500px;margin:0 auto}
+.welcome h2{color:#c9d1d9;font-size:18px;margin-bottom:8px;font-weight:600}
+.welcome p{color:#484f58;font-size:13px;margin-bottom:20px;line-height:1.6}
+.welcome-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.welcome-btn{background:#161b22;color:#58a6ff;border:1px solid #21262d;border-radius:6px;padding:6px 16px;font-size:12px;cursor:pointer;font-weight:500;transition:all .15s}
+.welcome-btn:hover{background:#1f2937;border-color:#30363d}
+
+/* Status */
+.loading{text-align:center;padding:40px;color:#8b949e}
+.loading-spinner{display:inline-block;width:16px;height:16px;border:2px solid #30363d;border-top-color:#58a6ff;border-radius:50%;animation:spin .6s linear infinite;margin-right:8px;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:40px;color:#484f58}
+.error-banner{background:#1a0e14;border:1px solid #f8514933;color:#f85149;padding:8px 12px;border-radius:6px;margin-bottom:12px;font-size:13px;display:flex;align-items:center;gap:8px}
+.error-dismiss{background:none;border:none;color:#f85149;cursor:pointer;margin-left:auto;font-size:14px;padding:0 4px}

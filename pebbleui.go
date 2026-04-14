@@ -21,8 +21,8 @@ const (
 	maxInlineBytes    = 1 << 20 // 1 MB
 )
 
-//go:embed index.html
-var indexHTML embed.FS
+//go:embed static/index.html static/style.css static/app.js
+var staticFS embed.FS
 
 // Store is the minimal interface the caller's store must satisfy.
 // Go's implicit interface matching means the caller never needs to
@@ -56,9 +56,10 @@ type Options struct {
 
 // Handler serves the Pebble UI and its API.
 type Handler struct {
-	store    Store
-	opts     Options
-	basePath string
+	store         Store
+	opts          Options
+	basePath      string
+	assembledHTML string
 }
 
 // New creates a handler. The caller's store is used directly.
@@ -70,9 +71,10 @@ func New(store Store, opts Options) *Handler {
 	bp = strings.TrimRight(bp, "/")
 
 	return &Handler{
-		store:    store,
-		opts:     opts,
-		basePath: bp,
+		store:         store,
+		opts:          opts,
+		basePath:      bp,
+		assembledHTML: assembleHTML(),
 	}
 }
 
@@ -279,14 +281,20 @@ func (h *Handler) handleKeyTypes(c *gin.Context) {
 
 // --- UI serving ---
 
+// assembledHTML is built once at New() time by composing the three static files.
+func assembleHTML() string {
+	htmlBytes, _ := staticFS.ReadFile("static/index.html")
+	cssBytes, _ := staticFS.ReadFile("static/style.css")
+	jsBytes, _ := staticFS.ReadFile("static/app.js")
+
+	page := string(htmlBytes)
+	page = strings.Replace(page, "{{STYLE}}", string(cssBytes), 1)
+	page = strings.Replace(page, "{{SCRIPT}}", string(jsBytes), 1)
+	return page
+}
+
 func (h *Handler) serveIndex(c *gin.Context) {
-	content, err := indexHTML.ReadFile("index.html")
-	if err != nil {
-		c.String(http.StatusInternalServerError, "UI not available")
-		return
-	}
-	// Inject the base path so the JS knows where the API lives
-	html := strings.ReplaceAll(string(content), "{{BASE_PATH}}", h.basePath)
+	html := strings.ReplaceAll(h.assembledHTML, "{{BASE_PATH}}", h.basePath)
 	c.Data(http.StatusOK, "text/html; charset=utf-8", []byte(html))
 }
 

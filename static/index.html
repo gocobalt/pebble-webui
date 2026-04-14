@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pebble UI</title>
+<style>{{STYLE}}</style>
+</head>
+<body>
+<div class="app" id="app">
+  <header class="app-header">
+    <h1>Pebble UI</h1>
+    <span class="subtitle">Key Browser</span>
+    <div class="header-right">
+      <span id="storeStatus" class="store-status"></span>
+      <span class="kbd-hint"><kbd>Ctrl</kbd>+<kbd>K</kbd> search &middot; <kbd>Esc</kbd> back</span>
+    </div>
+  </header>
+  <main id="main"></main>
+</div>
+<div class="toast" id="toast"></div>
+<script>const BASE='{{BASE_PATH}}/api';{{SCRIPT}}</script>
+</body>
+</html>
