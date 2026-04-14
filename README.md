@@ -95,11 +95,63 @@ go vet ./...
 
 To modify the UI, edit `index.html` directly. The `{{BASE_PATH}}` placeholder is replaced at runtime with the configured base path.
 
-To test changes in a host application, use a local replace directive in the host's `go.mod`:
+To test changes in a host application without publishing, see [Local development](#local-development-skip-publish-cycle) below.
+
+## Releasing a New Version
+
+After making changes to this module, follow these steps to release and update the consuming service.
+
+### 1. Commit and push your changes
+
+```bash
+git add .
+git commit -m "feat: describe your change"
+git push
+```
+
+### 2. Tag a semver release
+
+```bash
+git tag v0.2.0
+git push --tags
+```
+
+Use [semver](https://semver.org/) — bump the patch for fixes (`v0.1.1`), minor for new features (`v0.2.0`), major for breaking changes (`v1.0.0`).
+
+### 3. Update the consuming service
+
+In the host repo (e.g. thanos):
+
+```bash
+go get github.com/gocobalt/pebble-webui@v0.2.0
+```
+
+This updates `go.mod` and `go.sum`. Commit those changes:
+
+```bash
+git add go.mod go.sum
+git commit -m "deps: bump pebble-webui to v0.2.0"
+```
+
+### Quick update (without tagging)
+
+If you just want the latest commit without a formal release:
+
+```bash
+go get github.com/gocobalt/pebble-webui@latest
+```
+
+This pulls the latest commit as a pseudo-version (e.g. `v0.0.0-20260415...-abc1234`). Fine for development, but tagged versions are recommended for production.
+
+### Local development (skip publish cycle)
+
+Add a replace directive in the host's `go.mod` to point at your local checkout:
 
 ```
 replace github.com/gocobalt/pebble-webui => ../pebble-webui
 ```
+
+Remove it before committing.
 
 ## License
 
