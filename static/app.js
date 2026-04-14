@@ -358,6 +358,7 @@ function renderDetail(data) {
   html += '</div><div class="detail-body-content">';
 
   jid = 0;
+  jsonNodeValues = {};
   if (data.encoding === 'json') {
     html += '<div class="json-viewer">' + renderJSON(data.value, 0) + '</div>';
   } else if (data.encoding === 'base64') {
@@ -370,6 +371,8 @@ function renderDetail(data) {
 }
 
 // --- JSON tree ---
+var jsonNodeValues = {};
+
 function renderJSON(val, depth) {
   if (val === null) return '<span class="json-null">null</span>';
   if (typeof val === 'boolean') return '<span class="json-bool">' + val + '</span>';
@@ -379,7 +382,9 @@ function renderJSON(val, depth) {
   if (Array.isArray(val)) {
     if (val.length === 0) return '<span>[]</span>';
     var id = 'j' + (++jid), col = depth >= 2;
-    var h = '<span class="json-toggle" data-target="' + id + '">' + (col ? '\u25b6' : '\u25bc') + '</span>[';
+    jsonNodeValues[id] = val;
+    var h = '<span class="json-toggle" data-target="' + id + '">' + (col ? '\u25b6' : '\u25bc') + '</span>';
+    h += '<button class="json-copy-btn" data-jid="' + id + '" title="Copy">&#x2398;</button>[';
     h += '<span class="json-summary" id="' + id + '-s"' + (col ? '' : ' style="display:none"') + '>' + val.length + ' items]</span>';
     h += '<div id="' + id + '"' + (col ? ' class="json-collapsed"' : '') + ' style="margin-left:18px">';
     for (var i = 0; i < val.length; i++) {
@@ -393,7 +398,9 @@ function renderJSON(val, depth) {
     var ks = Object.keys(val);
     if (ks.length === 0) return '<span>{}</span>';
     var id = 'j' + (++jid), col = depth >= 2;
-    var h = '<span class="json-toggle" data-target="' + id + '">' + (col ? '\u25b6' : '\u25bc') + '</span>{';
+    jsonNodeValues[id] = val;
+    var h = '<span class="json-toggle" data-target="' + id + '">' + (col ? '\u25b6' : '\u25bc') + '</span>';
+    h += '<button class="json-copy-btn" data-jid="' + id + '" title="Copy">&#x2398;</button>{';
     h += '<span class="json-summary" id="' + id + '-s"' + (col ? '' : ' style="display:none"') + '>' + ks.length + ' keys}</span>';
     h += '<div id="' + id + '"' + (col ? ' class="json-collapsed"' : '') + ' style="margin-left:18px">';
     for (var i = 0; i < ks.length; i++) {
@@ -538,6 +545,15 @@ function bindDetailEvents() {
   if (expandAll) expandAll.onclick = function() { toggleAllJSON(true); };
   var collapseAll = document.getElementById('collapseAll');
   if (collapseAll) collapseAll.onclick = function() { toggleAllJSON(false); };
+
+  // JSON copy buttons
+  document.querySelectorAll('.json-copy-btn').forEach(function(btn) {
+    btn.onclick = function(e) {
+      e.stopPropagation();
+      var val = jsonNodeValues[btn.dataset.jid];
+      if (val !== undefined) copyText(JSON.stringify(val, null, 2));
+    };
+  });
 
   // JSON toggles
   document.querySelectorAll('.json-toggle').forEach(function(toggle) {

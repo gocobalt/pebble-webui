@@ -111,6 +111,7 @@ kbd{background:#161b22;border:1px solid #30363d;border-radius:3px;padding:1px 5p
 .json-viewer{font-size:13px;font-family:'SF Mono','Fira Code',monospace;line-height:1.6}
 .json-key{color:#79c0ff}.json-str{color:#a5d6ff}.json-num{color:#d2a8ff}.json-bool{color:#ff7b72}.json-null{color:#484f58}
 .json-toggle{cursor:pointer;user-select:none;color:#484f58;display:inline-block;width:14px;text-align:center}.json-toggle:hover{color:#c9d1d9}
+.json-copy-btn{background:none;border:none;color:#30363d;cursor:pointer;font-size:12px;padding:0 3px;vertical-align:middle;opacity:0;transition:opacity .15s}.json-viewer div:hover>.json-copy-btn,.json-copy-btn:hover{opacity:1;color:#58a6ff}
 .json-collapsed{display:none}
 .json-summary{color:#484f58;font-style:italic}
 .text-viewer{font-family:'SF Mono','Fira Code',monospace;font-size:13px;white-space:pre-wrap;word-break:break-all;color:#c9d1d9;line-height:1.6}
