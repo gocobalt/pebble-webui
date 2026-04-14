@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pebble UI</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,monospace;background:#0d1117;color:#c9d1d9;line-height:1.5}
+.app{max-width:1400px;margin:0 auto;padding:16px}
+.app-header{display:flex;align-items:baseline;gap:12px;padding:12px 0;border-bottom:1px solid #21262d;margin-bottom:16px}
+.app-header h1{font-size:20px;color:#58a6ff}
+.subtitle{font-size:14px;color:#8b949e}
+
+/* Search */
+.search-bar{display:flex;gap:8px;margin-bottom:16px}
+.search-bar input{flex:1;background:#161b22;color:#c9d1d9;border:1px solid #30363d;border-radius:6px;padding:8px 12px;font-size:14px;outline:none}
+.search-bar input:focus{border-color:#58a6ff}
+.search-bar button{background:#238636;color:#fff;border:none;border-radius:6px;padding:8px 20px;font-size:14px;cursor:pointer;font-weight:500}
+.search-bar button:hover{background:#2ea043}
+
+/* Filter chips */
+.key-type-filter{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.filter-label{font-size:12px;color:#8b949e;white-space:nowrap}
+.filter-chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{background:#161b22;color:#58a6ff;border:1px solid #21262d;border-radius:16px;padding:4px 12px;font-size:12px;cursor:pointer;white-space:nowrap;transition:background .1s,border-color .1s}
+.chip:hover,.chip-active{background:#1f2937;border-color:#58a6ff}
+.chip-wrapper{position:relative}
+.chip-tooltip{position:absolute;top:calc(100% + 6px);left:0;z-index:10;background:#1c2128;border:1px solid #30363d;border-radius:8px;padding:10px 12px;min-width:300px;max-width:480px;box-shadow:0 4px 12px rgba(0,0,0,.4);pointer-events:none}
+.chip-desc{font-size:12px;color:#c9d1d9;margin-bottom:6px;line-height:1.4}
+.chip-example{display:block;font-family:'SF Mono','Fira Code',monospace;font-size:11px;color:#7ee787;background:#0d1117;padding:4px 8px;border-radius:4px;word-break:break-all}
+
+/* Key list table */
+.key-list table{width:100%;border-collapse:collapse;font-size:13px}
+.key-list thead th{text-align:left;padding:8px 12px;border-bottom:1px solid #30363d;color:#8b949e;font-weight:600;position:sticky;top:0;background:#0d1117}
+.key-row{cursor:pointer;transition:background .1s}
+.key-row:hover{background:#161b22}
+.key-row td{padding:6px 12px;border-bottom:1px solid #21262d;vertical-align:top}
+.key-cell{font-family:'SF Mono','Fira Code',monospace;color:#58a6ff;word-break:break-all;max-width:500px}
+.size-cell{white-space:nowrap;color:#8b949e;min-width:80px}
+.preview-cell{color:#8b949e;font-family:'SF Mono','Fira Code',monospace;font-size:12px;max-width:400px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.load-more{display:block;margin:16px auto;background:#21262d;color:#c9d1d9;border:1px solid #30363d;border-radius:6px;padding:8px 24px;font-size:14px;cursor:pointer}
+.load-more:hover{background:#30363d}
+
+/* Key detail */
+.detail-header{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #21262d;margin-bottom:16px;flex-wrap:wrap}
+.back-btn{background:#21262d;color:#c9d1d9;border:1px solid #30363d;border-radius:6px;padding:6px 14px;cursor:pointer;font-size:13px}
+.back-btn:hover{background:#30363d}
+.detail-key{font-family:'SF Mono','Fira Code',monospace;font-size:16px;color:#58a6ff;word-break:break-all}
+.detail-meta{font-size:13px;color:#8b949e;margin-left:auto}
+.download-btn{background:#21262d;color:#58a6ff;border:1px solid #30363d;border-radius:6px;padding:6px 14px;text-decoration:none;font-size:13px}
+.download-btn:hover{background:#30363d}
+.detail-body{background:#161b22;border:1px solid #21262d;border-radius:6px;padding:16px;overflow-x:auto;max-height:calc(100vh - 200px);overflow-y:auto}
+
+/* Viewers */
+.json-viewer{font-size:13px;font-family:'SF Mono','Fira Code',monospace}
+.json-key{color:#79c0ff}.json-str{color:#a5d6ff}.json-num{color:#79c0ff}.json-bool{color:#ff7b72}.json-null{color:#8b949e}
+.json-toggle{cursor:pointer;user-select:none;color:#8b949e}.json-toggle:hover{color:#c9d1d9}
+.json-collapsed{display:none}
+.text-viewer{font-family:'SF Mono','Fira Code',monospace;font-size:13px;white-space:pre-wrap;word-break:break-all;color:#c9d1d9}
+.hex-viewer{font-family:'SF Mono','Fira Code',monospace;font-size:12px;line-height:1.6;color:#8b949e}
+
+/* Status */
+.loading{text-align:center;padding:40px;color:#8b949e}
+.empty{text-align:center;padding:40px;color:#484f58}
+.error-banner{background:#3d1f28;border:1px solid #f85149;color:#f85149;padding:8px 12px;border-radius:6px;margin-bottom:12px;font-size:13px}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <header class="app-header">
+    <h1>Pebble UI</h1>
+    <span class="subtitle">Key Browser</span>
+  </header>
+  <main id="main"></main>
+</div>
+
+<script>
+const BASE = '{{BASE_PATH}}/api';
+
+// --- State ---
+let currentView = 'browser';
+let keys = [];
+let nextCursor = null;
+let currentPrefix = '';
+let loading = false;
+let errorMsg = '';
+let detailData = null;
+let keyTypes = [];
+
+// --- API ---
+async function apiFetch(url) {
+  const res = await fetch(url);
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(body || res.statusText);
+  }
+  return res.json();
+}
+
+function apiListKeys(prefix, cursor, limit) {
+  limit = limit || 50;
+  const p = new URLSearchParams({limit: String(limit)});
+  if (prefix) p.set('prefix', prefix);
+  if (cursor) p.set('cursor', cursor);
+  return apiFetch(BASE + '/keys?' + p);
+}
+
+function apiGetKey(key) {
+  return apiFetch(BASE + '/key?' + new URLSearchParams({key}));
+}
+
+function apiDownloadURL(key) {
+  return BASE + '/key/download?' + new URLSearchParams({key});
+}
+
+async function loadKeyTypes() {
+  try {
+    const res = await apiFetch(BASE + '/key-types');
+    keyTypes = res.key_types || [];
+  } catch(e) {
+    keyTypes = [];
+  }
+}
+
+// --- Search logic ---
+async function doSearch(query, append) {
+  loading = true;
+  errorMsg = '';
+  if (!append) { keys = []; nextCursor = null; }
+  render();
+
+  try {
+    // Try exact key first
+    if (query && !append) {
+      try {
+        const data = await apiGetKey(query);
+        if (data && data.value !== undefined) {
+          detailData = data;
+          currentView = 'detail';
+          loading = false;
+          render();
+          return;
+        }
+      } catch(e) { /* not exact — fall through */ }
+    }
+
+    const c = append ? nextCursor : undefined;
+    const res = await apiListKeys(query, c);
+    if (append) {
+      keys = keys.concat(res.keys);
+    } else {
+      keys = res.keys;
+    }
+    nextCursor = res.next_cursor || null;
+    currentPrefix = query;
+  } catch(e) {
+    errorMsg = e.message || 'Search failed';
+  }
+  loading = false;
+  render();
+}
+
+async function selectKey(key) {
+  try {
+    const data = await apiGetKey(key);
+    detailData = data;
+    currentView = 'detail';
+    render();
+  } catch(e) {
+    errorMsg = e.message || 'Failed to load key';
+    render();
+  }
+}
+
+function goBack() {
+  currentView = 'browser';
+  detailData = null;
+  render();
+}
+
+// --- Rendering ---
+function render() {
+  const main = document.getElementById('main');
+  if (currentView === 'detail' && detailData) {
+    main.innerHTML = renderDetail(detailData);
+    bindDetailEvents();
+  } else {
+    main.innerHTML = renderBrowser();
+    bindBrowserEvents();
+  }
+}
+
+function renderBrowser() {
+  let html = '';
+
+  // Search bar
+  html += '<form class="search-bar" id="searchForm">';
+  html += '<input type="text" id="searchInput" placeholder="Key prefix or exact key..." autofocus value="' + esc(currentPrefix) + '">';
+  html += '<button type="submit">Search</button></form>';
+
+  // Key type filters
+  if (keyTypes.length > 0) {
+    html += '<div class="key-type-filter"><span class="filter-label">Quick filters:</span><div class="filter-chips">';
+    keyTypes.forEach(function(kt, i) {
+      html += '<div class="chip-wrapper" data-idx="' + i + '">';
+      html += '<button class="chip" data-prefix="' + esc(kt.prefix) + '">' + esc(kt.label) + '</button>';
+      html += '<div class="chip-tooltip" style="display:none">';
+      html += '<div class="chip-desc">' + esc(kt.description) + '</div>';
+      html += '<code class="chip-example">' + esc(kt.example) + '</code></div></div>';
+    });
+    html += '</div></div>';
+  }
+
+  // Error
+  if (errorMsg) {
+    html += '<div class="error-banner">' + esc(errorMsg) + '</div>';
+  }
+
+  // Loading
+  if (loading) {
+    html += '<div class="loading">Scanning keys...</div>';
+    return html;
+  }
+
+  // Key list
+  if (keys.length === 0 && currentPrefix) {
+    html += '<div class="empty">No keys found.</div>';
+    return html;
+  }
+
+  if (keys.length > 0) {
+    html += '<div class="key-list"><table><thead><tr><th>Key</th><th>Size</th><th>Preview</th></tr></thead><tbody>';
+    keys.forEach(function(entry) {
+      html += '<tr class="key-row" data-key="' + esc(entry.key) + '">';
+      html += '<td class="key-cell">' + esc(entry.key) + '</td>';
+      html += '<td class="size-cell">' + formatSize(entry.value_size) + '</td>';
+      html += '<td class="preview-cell">' + esc(entry.value_preview) + '</td></tr>';
+    });
+    html += '</tbody></table>';
+    if (nextCursor) {
+      html += '<button class="load-more" id="loadMore">Load More</button>';
+    }
+    html += '</div>';
+  }
+
+  return html;
+}
+
+function renderDetail(data) {
+  let html = '<div class="key-detail"><div class="detail-header">';
+  html += '<button class="back-btn" id="backBtn">&larr; Back</button>';
+  html += '<h2 class="detail-key">' + esc(data.key) + '</h2>';
+  html += '<span class="detail-meta">' + formatSize(data.size) + ' | ' + esc(data.encoding);
+  if (data.truncated) html += ' | truncated';
+  html += '</span>';
+  if (data.size > 0) {
+    html += '<a href="' + apiDownloadURL(data.key) + '" class="download-btn" download>Download</a>';
+  }
+  html += '</div><div class="detail-body">';
+
+  if (data.encoding === 'json') {
+    html += '<div class="json-viewer">' + renderJSON(data.value, 0) + '</div>';
+  } else if (data.encoding === 'base64') {
+    html += '<pre class="hex-viewer">' + renderHex(data.value) + '</pre>';
+  } else {
+    html += '<pre class="text-viewer">' + esc(String(data.value)) + '</pre>';
+  }
+
+  html += '</div></div>';
+  return html;
+}
+
+// --- JSON tree viewer ---
+function renderJSON(val, depth) {
+  if (val === null) return '<span class="json-null">null</span>';
+  if (typeof val === 'boolean') return '<span class="json-bool">' + val + '</span>';
+  if (typeof val === 'number') return '<span class="json-num">' + val + '</span>';
+  if (typeof val === 'string') return '<span class="json-str">"' + esc(val) + '"</span>';
+
+  if (Array.isArray(val)) {
+    if (val.length === 0) return '<span>[]</span>';
+    const id = 'j' + Math.random().toString(36).substr(2, 8);
+    const collapsed = depth >= 3;
+    let h = '<span class="json-toggle" data-target="' + id + '">' + (collapsed ? '&#9654;' : '&#9660;') + '</span> [';
+    h += '<span class="json-summary" id="' + id + '-s"' + (collapsed ? '' : ' style="display:none"') + '>' + val.length + ' items]</span>';
+    h += '<div id="' + id + '"' + (collapsed ? ' class="json-collapsed"' : '') + ' style="margin-left:20px">';
+    val.forEach(function(item, i) {
+      h += renderJSON(item, depth + 1);
+      if (i < val.length - 1) h += ',';
+      h += '<br>';
+    });
+    h += '</div>]';
+    return h;
+  }
+
+  if (typeof val === 'object') {
+    const objKeys = Object.keys(val);
+    if (objKeys.length === 0) return '<span>{}</span>';
+    const id = 'j' + Math.random().toString(36).substr(2, 8);
+    const collapsed = depth >= 3;
+    let h = '<span class="json-toggle" data-target="' + id + '">' + (collapsed ? '&#9654;' : '&#9660;') + '</span> {';
+    h += '<span class="json-summary" id="' + id + '-s"' + (collapsed ? '' : ' style="display:none"') + '>' + objKeys.length + ' keys}</span>';
+    h += '<div id="' + id + '"' + (collapsed ? ' class="json-collapsed"' : '') + ' style="margin-left:20px">';
+    objKeys.forEach(function(k, i) {
+      h += '<span class="json-key">"' + esc(k) + '"</span>: ' + renderJSON(val[k], depth + 1);
+      if (i < objKeys.length - 1) h += ',';
+      h += '<br>';
+    });
+    h += '</div>}';
+    return h;
+  }
+  return esc(String(val));
+}
+
+// --- Hex viewer ---
+function renderHex(b64) {
+  try {
+    const raw = atob(b64);
+    const bytes = new Uint8Array(raw.length);
+    for (let i = 0; i < raw.length; i++) bytes[i] = raw.charCodeAt(i);
+    const lines = [];
+    for (let i = 0; i < bytes.length; i += 16) {
+      const slice = bytes.slice(i, i + 16);
+      const hex = Array.from(slice).map(function(b) { return b.toString(16).padStart(2, '0'); }).join(' ');
+      const ascii = Array.from(slice).map(function(b) { return (b >= 32 && b < 127) ? String.fromCharCode(b) : '.'; }).join('');
+      lines.push(i.toString(16).padStart(8, '0') + '  ' + hex.padEnd(48) + '  ' + ascii);
+    }
+    return esc(lines.join('\n'));
+  } catch(e) {
+    return esc(b64);
+  }
+}
+
+// --- Event binding ---
+function bindBrowserEvents() {
+  var form = document.getElementById('searchForm');
+  if (form) form.onsubmit = function(e) {
+    e.preventDefault();
+    doSearch(document.getElementById('searchInput').value, false);
+  };
+
+  document.querySelectorAll('.chip').forEach(function(btn) {
+    btn.onclick = function() { doSearch(btn.dataset.prefix, false); };
+  });
+
+  document.querySelectorAll('.chip-wrapper').forEach(function(wrap) {
+    var tip = wrap.querySelector('.chip-tooltip');
+    if (!tip) return;
+    wrap.onmouseenter = function() { tip.style.display = 'block'; };
+    wrap.onmouseleave = function() { tip.style.display = 'none'; };
+  });
+
+  document.querySelectorAll('.key-row').forEach(function(row) {
+    row.onclick = function() { selectKey(row.dataset.key); };
+  });
+
+  var loadMore = document.getElementById('loadMore');
+  if (loadMore) loadMore.onclick = function() { doSearch(currentPrefix, true); };
+}
+
+function bindDetailEvents() {
+  var backBtn = document.getElementById('backBtn');
+  if (backBtn) backBtn.onclick = goBack;
+
+  // JSON toggle
+  document.querySelectorAll('.json-toggle').forEach(function(toggle) {
+    toggle.onclick = function() {
+      var target = document.getElementById(toggle.dataset.target);
+      var summary = document.getElementById(toggle.dataset.target + '-s');
+      if (!target) return;
+      var hidden = target.classList.contains('json-collapsed');
+      if (hidden) {
+        target.classList.remove('json-collapsed');
+        target.style.display = '';
+        if (summary) summary.style.display = 'none';
+        toggle.innerHTML = '&#9660;';
+      } else {
+        target.classList.add('json-collapsed');
+        target.style.display = 'none';
+        if (summary) summary.style.display = '';
+        toggle.innerHTML = '&#9654;';
+      }
+    };
+  });
+}
+
+// --- Helpers ---
+function formatSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
+
+function esc(s) {
+  var d = document.createElement('div');
+  d.appendChild(document.createTextNode(s));
+  return d.innerHTML;
+}
+
+// --- Init ---
+loadKeyTypes().then(render);
+</script>
+</body>
+</html>
