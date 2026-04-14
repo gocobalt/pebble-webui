@@ -126,7 +126,7 @@ function doSearch(query, append) {
           detailData = data;
           currentView = 'detail';
           addRecent(query);
-          writeHash(query);
+          writeHash('key:' + query);
           loading = false;
           render();
           return true;
@@ -159,6 +159,7 @@ function selectKey(key) {
   apiGetKey(key).then(function(data) {
     detailData = data;
     currentView = 'detail';
+    writeHash('key:' + key);
     render();
   }).catch(function(e) {
     errorMsg = e.message || 'Failed to load key';
@@ -169,6 +170,7 @@ function selectKey(key) {
 function goBack() {
   currentView = 'browser';
   detailData = null;
+  writeHash(currentPrefix);
   render();
 }
 
@@ -616,14 +618,24 @@ function esc(s) {
 }
 
 // --- Init ---
-window.addEventListener('hashchange', function() {
+function navigateFromHash() {
   var h = readHash();
-  if (h !== currentPrefix) doSearch(h, false);
-});
+  if (!h) { if (hasSearched) clearSearch(); return; }
+  if (h.indexOf('key:') === 0) {
+    var k = h.slice(4);
+    if (detailData && detailData.key === k) return;
+    selectKey(k);
+  } else {
+    if (h !== currentPrefix) doSearch(h, false);
+  }
+}
+
+window.addEventListener('hashchange', navigateFromHash);
 
 loadKeyTypes().then(function() {
   loadStats();
   var h = readHash();
-  if (h) doSearch(h, false);
+  if (h && h.indexOf('key:') === 0) selectKey(h.slice(4));
+  else if (h) doSearch(h, false);
   else render();
 });
