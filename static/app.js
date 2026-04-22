@@ -471,7 +471,20 @@ function bindBrowserEvents() {
 
   // Chips
   document.querySelectorAll('.chip').forEach(function(btn) {
-    btn.onclick = function() { var p = btn.dataset.prefix; if (inp) inp.value = p; doSearch(p, false); };
+    btn.onclick = function(e) {
+      var p = btn.dataset.prefix;
+      if (e.metaKey || e.ctrlKey) {
+        window.open(location.pathname + location.search + '#' + encodeURIComponent(p), '_blank');
+        return;
+      }
+      if (inp) inp.value = p;
+      doSearch(p, false);
+    };
+    btn.onauxclick = function(e) {
+      if (e.button !== 1) return;
+      e.preventDefault();
+      window.open(location.pathname + location.search + '#' + encodeURIComponent(btn.dataset.prefix), '_blank');
+    };
   });
   document.querySelectorAll('.chip-wrapper').forEach(function(wrap) {
     var tip = wrap.querySelector('.chip-tooltip');
@@ -484,7 +497,16 @@ function bindBrowserEvents() {
   document.querySelectorAll('.key-row').forEach(function(row) {
     row.onclick = function(e) {
       if (e.target.classList.contains('copy-btn')) return;
+      if (e.metaKey || e.ctrlKey) {
+        window.open(location.pathname + location.search + '#key:' + encodeURIComponent(row.dataset.key), '_blank');
+        return;
+      }
       selectKey(row.dataset.key);
+    };
+    row.onauxclick = function(e) {
+      if (e.button !== 1) return;
+      e.preventDefault();
+      window.open(location.pathname + location.search + '#key:' + encodeURIComponent(row.dataset.key), '_blank');
     };
   });
 
@@ -647,6 +669,12 @@ function navigateFromHash() {
 }
 
 window.addEventListener('hashchange', navigateFromHash);
+
+var navHomeHeader = document.getElementById('navHomeHeader');
+if (navHomeHeader) navHomeHeader.onclick = function() {
+  if (currentView === 'detail') goBack();
+  clearSearch();
+};
 
 loadKeyTypes().then(function() {
   loadStats();
